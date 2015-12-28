@@ -1,0 +1,46 @@
+{
+  "name": "@fredguile/cluster-respawn",
+  "version": "0.0.1",
+  "description": "My own cluster manager for node.js applications",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "babel src --out-dir lib",
+    "clean": "rimraf lib",
+    "lint": "eslint src test",
+    "install": "npm run-script build",
+    "test": "mocha --compilers js:babel-core/register --recursive --require ./test/setup.js",
+    "example": "node lib/example/master.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fredguile/cluster-respawn.git"
+  },
+  "files": [
+    "lib",
+    "src"
+  ],
+  "engines": {
+    "node": ">=4.1.x",
+    "npm": ">=2.14.x"
+  },
+  "author": "fredguile",
+  "license": "MIT",
+  "homepage": "https://github.com/fredguile/cluster-respawn#readme",
+  "devDependencies": {
+    "babel-cli": "^6.3.17",
+    "babel-core": "^6.3.26",
+    "babel-eslint": "^4.1.6",
+    "babel-preset-es2015-node4": "^2.0.2",
+    "eslint": "^1.10.3",
+    "expect": "^1.13.4",
+    "invariant": "^2.2.0",
+    "mocha": "^2.3.4",
+    "rimraf": "^2.5.0"
+  },
+  "dependencies": {
+    "bluebird": "^3.1.1",
+    "debug": "^2.2.0",
+    "lodash": "^3.10.1",
+    "source-map-support": "^0.4.0"
+  }
+}
