@@ -1,3 +1,4 @@
+NPM_INSTALL = npm install
 NPM_RUN = npm --silent --no-spin run-script
 
 NODE_ENV ?= development
@@ -26,8 +27,11 @@ usage:
 
 # ---
 # ## Building & Linting
+node_modules:
+	@$(NPM_INSTALL)
+
 .PHONY: build
-build: clean
+build: node_modules clean
 	@$(NPM_RUN) build
 
 .PHONY: lint
@@ -37,7 +41,7 @@ lint: build
 # ---
 # ## Testing
 .PHONY: test
-test: build
+test:
 	@$(NPM_RUN) test
 
 # ---
