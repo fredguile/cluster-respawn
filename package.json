@@ -1,5 +1,5 @@
 {
-  "name": "@fredguile/cluster-respawn",
+  "name": "cluster-respawn",
   "version": "0.0.1",
   "description": "My own cluster manager for node.js applications",
   "main": "lib/index.js",
