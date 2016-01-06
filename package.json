@@ -1,6 +1,6 @@
 {
   "name": "cluster-respawn",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "My own cluster manager for node.js applications",
   "main": "lib/index.js",
   "scripts": {
