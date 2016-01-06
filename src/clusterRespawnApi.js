@@ -20,7 +20,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import {EventEmitter} from 'events';
-import {promisifyAll} from 'bluebird';
+import Promise, {promisifyAll} from 'bluebird';
 import {defaults, mapValues, times} from 'lodash';
 import invariant from 'invariant';
 import debugLib from 'debug';
@@ -118,15 +118,21 @@ export default class ClusterRespawnApi extends EventEmitter {
     }, options.masterShutdownTimeout);
     timer.unref();
 
+    const shutdownTasks = [];
+
     if(options.writePidFiles) {
-      removePidFiles(options.root, /master\.pid/);
+      shutdownTasks.push(removePidFiles(options.root, /master\.pid/));
     }
 
-    debug('Shutting down cluster', {workers: workersSummary()});
-    cluster.disconnect(() => {
-      debug('All workers exited. Emitting shutdown', {workers: workersSummary()});
-      this.emit('shutdown');
-    });
+    Promise
+      .all(shutdownTasks)
+      .then(() => {
+        debug('Shutting down cluster', {workers: workersSummary()});
+        cluster.disconnect(() => {
+          debug('All workers exited. Emitting shutdown', {workers: workersSummary()});
+          this.emit('shutdown');
+        });
+      });
   }
 }
 
@@ -214,17 +220,22 @@ function setupWorkers(clusterRespawn, options, boot) {
 function workersSummary() { return mapValues(cluster.workers, worker => worker.process.pid); };
 
 function writePidFile(dir, name, pid) {
-  const file = path.resolve(dir, `${name}.pid`);
-  return fs.writeFileAsync(file, pid, 'ascii').then(() => debug(`wrote ${name}.pid`));
+  const filename = `${name}.pid`;
+  const file = path.resolve(dir, filename);
+  return fs
+    .writeFileAsync(file, pid, 'ascii')
+    .then(() => {
+      debug(`wrote ${filename}`);
+      return filename;
+    });
 }
 
 function removePidFiles(dir, pattern = /.+\.pid/) {
   return fs
     .readdirAsync(dir)
-    .call('filter', fileName => fileName.match(pattern))
-    .map(fileName => {
-      return fs
-        .unlinkAsync(path.resolve(dir, fileName))
-        .then(() => debug(`removed ${fileName}`));
+    .filter(filename => filename.match(pattern))
+    .mapSeries(filename => {
+      debug(`removing ${filename}`);
+      return fs.unlinkAsync(path.resolve(dir, filename));
     });
 }

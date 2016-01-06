@@ -119,7 +119,8 @@ describe('ClusterRespawnApi', () => {
 
     it('calls cluster.disconnect()', () => {
       clusterRespawnApi.shutdown();
-      expect(stubs.disconnect.called).to.be.true;
+
+      setTimeout(() => expect(stubs.disconnect.called).to.be.true, 50);
     });
 
     it('emits a shutdown event', () => {
