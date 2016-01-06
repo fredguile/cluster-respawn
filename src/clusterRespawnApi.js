@@ -53,7 +53,9 @@ export default class ClusterRespawnApi extends EventEmitter {
     setupWorkers(this, this.options, this.boot);
 
     if(this.options.writePidFiles) {
-      writePidFile(this.options.root, 'master', process.pid);
+      writePidFile(this.options.root, 'master', process.pid)
+        .then(filename => debug(`wrote ${filename}`))
+        .catch(err => console.log(err));
     }
 
     return this;
@@ -132,7 +134,8 @@ export default class ClusterRespawnApi extends EventEmitter {
           debug('All workers exited. Emitting shutdown', {workers: workersSummary()});
           this.emit('shutdown');
         });
-      });
+      })
+      .catch(err => console.log(err));
   }
 }
 
@@ -166,7 +169,9 @@ function setupWorkers(clusterRespawn, options, boot) {
 
   cluster.on('fork', worker => {
     if(options.writePidFiles) {
-      writePidFile(options.root, `worker-${worker.id}`, worker.process.pid);
+      writePidFile(options.root, `worker-${worker.id}`, worker.process.pid)
+        .then(filename => debug(`wrote ${filename}`))
+        .catch(err => console.log(err));
     }
 
     if(options.onMessage) {
@@ -224,10 +229,7 @@ function writePidFile(dir, name, pid) {
   const file = path.resolve(dir, filename);
   return fs
     .writeFileAsync(file, pid, 'ascii')
-    .then(() => {
-      debug(`wrote ${filename}`);
-      return filename;
-    });
+    .then(() => filename);
 }
 
 function removePidFiles(dir, pattern = /.+\.pid/) {
@@ -236,6 +238,8 @@ function removePidFiles(dir, pattern = /.+\.pid/) {
     .filter(filename => filename.match(pattern))
     .mapSeries(filename => {
       debug(`removing ${filename}`);
-      return fs.unlinkAsync(path.resolve(dir, filename));
+      return fs
+        .unlinkAsync(path.resolve(dir, filename))
+        .then(() => filename);
     });
 }
