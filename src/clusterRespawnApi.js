@@ -27,6 +27,12 @@ import debugLib from 'debug';
 
 promisifyAll(fs);
 
+Promise.config({
+  warnings: {
+      wForgottenReturn: false
+  }
+});
+
 const defaultOptions = {
   root: process.cwd(),
   childProcesses: 1,
@@ -53,9 +59,7 @@ export default class ClusterRespawnApi extends EventEmitter {
     setupWorkers(this, this.options, this.boot);
 
     if(this.options.writePidFiles) {
-      writePidFile(this.options.root, 'master', process.pid)
-        .then(filename => debug(`wrote ${filename}`))
-        .catch(err => console.log(err));
+      writePidFile(this.options.root, 'master', process.pid);
     }
 
     return this;
@@ -130,7 +134,7 @@ export default class ClusterRespawnApi extends EventEmitter {
       .all(shutdownTasks)
       .then(() => {
         debug('Shutting down cluster', {workers: workersSummary()});
-        cluster.disconnect(() => {
+        return cluster.disconnect(() => {
           debug('All workers exited. Emitting shutdown', {workers: workersSummary()});
           this.emit('shutdown');
         });
@@ -169,9 +173,7 @@ function setupWorkers(clusterRespawn, options, boot) {
 
   cluster.on('fork', worker => {
     if(options.writePidFiles) {
-      writePidFile(options.root, `worker-${worker.id}`, worker.process.pid)
-        .then(filename => debug(`wrote ${filename}`))
-        .catch(err => console.log(err));
+      writePidFile(options.root, `worker-${worker.id}`, worker.process.pid);
     }
 
     if(options.onMessage) {
@@ -226,20 +228,19 @@ function workersSummary() { return mapValues(cluster.workers, worker => worker.p
 
 function writePidFile(dir, name, pid) {
   const filename = `${name}.pid`;
-  const file = path.resolve(dir, filename);
   return fs
-    .writeFileAsync(file, pid, 'ascii')
-    .then(() => filename);
+    .writeFileAsync(path.resolve(dir, filename), pid, 'ascii')
+    .then(() => { debug(`wrote ${filename}`); return filename; })
+    .catch(err => { return console.log(err); });
 }
 
 function removePidFiles(dir, pattern = /.+\.pid/) {
   return fs
     .readdirAsync(dir)
     .filter(filename => filename.match(pattern))
-    .mapSeries(filename => {
-      debug(`removing ${filename}`);
-      return fs
-        .unlinkAsync(path.resolve(dir, filename))
-        .then(() => filename);
-    });
+    .mapSeries(filename => fs
+      .unlinkAsync(path.resolve(dir, filename))
+      .then(() => filename))
+    .each(filename => debug(`removed ${filename}`))
+    .catch(err => { return console.log(err); });
 }
