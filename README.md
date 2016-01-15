@@ -64,3 +64,6 @@ Call this to shutdown the cluster.
 
 Run "make test".
 
+#### Concrete example
+
+Still too abstract? Then I recommend to check out my [React starter kit](https://www.npmjs.com/package/react-redux-es2015-starter-kit) which is using cluster-respawn. After all, the module was initiated for this purpose.
