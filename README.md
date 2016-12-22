@@ -1,7 +1,7 @@
 # cluster-respawn
 My own cluster manager for node.js applications.
 
-DISCLAIMER: This was my "introductory project" for learning Node.js. I wouldn't use it today as `cluster-respawn` doesn't comply with the [twelve-factor app manifesto](https://12factor.net/) and that I'm mostly hosting Node.js app on PaaS/IaaS.
+**DISCLAIMER: This was my "introductory project" for learning Node.js. I wouldn't use it today as `cluster-respawn` doesn't comply with the [twelve-factor app manifesto](https://12factor.net/) and that I'm mostly hosting Node.js app on PaaS/IaaS.**
 
 Despite there are already some cluster management modules on npmjs.com, I found it was a good exercice to write my own lib where I could put some handy features like: 
 
