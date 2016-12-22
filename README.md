@@ -1,6 +1,8 @@
 # cluster-respawn
 My own cluster manager for node.js applications.
 
+DISCLAIMER: This was my "introductory project" for learning Node.js. I wouldn't use it today as `cluster-respawn` doesn't comply with the [twelve-factor app manifesto](https://12factor.net/) and that I'm mostly hosting Node.js app on PaaS/IaaS.
+
 Despite there are already some cluster management modules on npmjs.com, I found it was a good exercice to write my own lib where I could put some handy features like: 
 
 - my typical Makefile: it may look old school, but I get shorter commands to type and I can easily set up default environment variables for my preferred platforms (OSX and Windows). You can use make on Windows after installing the [right tools](http://scoop.sh/).
