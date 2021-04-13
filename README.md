@@ -1,4 +1,7 @@
-# cluster-respawn
+# **DEPRECATED** - cluster-respawn
+
+**[this project is no longer actively maintained]**
+
 My own cluster manager for node.js applications.
 
 **DISCLAIMER: This was my "introductory project" for learning Node.js. I wouldn't use it today as `cluster-respawn` doesn't comply with the [twelve-factor app manifesto](https://12factor.net/) and that I'm mostly hosting Node.js app on PaaS/IaaS.**
